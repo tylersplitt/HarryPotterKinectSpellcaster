@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HarryPotterKinectSpellcaster"
         mc:Ignorable="d"
-        Title="MainWindow" WindowState="Maximized" WindowStyle="None" Background="Black" KeyDown="EscapeHandler"
+        Title="MainWindow" WindowState="Maximized" WindowStyle="None" Background="Black" KeyDown="EscapeHandler" 
         Loaded="WindowLoaded" Closing="WindowClosing">
     <Grid>
         <MediaElement Source="Intro\Full_Intro.mp4" Name="introPlayer" LoadedBehavior="Manual" Stretch="Fill" />
@@ -13,17 +13,16 @@
         <Image Source="Intro\Title_Text.png" Opacity="0" MaxHeight="400"  Name="introText" />
 
         <MediaElement Source="Spells\WinLev_Success.mp4" Name="winLevPlayer" LoadedBehavior="Manual" Stretch="Fill" />
-        <MediaElement Source="Spells\WinLev_Fail.mp4" Name="winLevFailPlayer" LoadedBehavior="Manual" Stretch="Fill" />
+        <MediaElement Source="Spells\Expeliarmus1.mp4" Name="expelPlayer1" LoadedBehavior="Manual" Stretch="Fill" />
+        <MediaElement Source="Spells\Expeliarmus2.mp4" Name="expelPlayer2" LoadedBehavior="Manual" Stretch="Fill" />
+        <MediaElement Source="Spells\Alohomora.mp4" Name="alohomoraPlayer" LoadedBehavior="Manual" Stretch="Fill" />
+        <MediaElement Source="Spells\ExPat1.mp4" Name="expatPlayer1" LoadedBehavior="Manual" Stretch="Fill" />
+        <MediaElement Source="Spells\ExPat2.mp4" Name="expatPlayer2" LoadedBehavior="Manual" Stretch="Fill" />
+        <MediaElement Source="Spells\do_not_use.mp4" Name="avadaPlayer" LoadedBehavior="Manual" Stretch="Fill" />
 
         <MediaElement Source="Transition\Smoke_Transition_Start.mp4" Name="transitionStartPlayer" LoadedBehavior="Manual" Stretch="Fill" />
         <MediaElement Source="Transition\Smoke_Transition_End.mp4" Name="transitionEndPlayer" LoadedBehavior="Manual" Stretch="Fill" />
-        <StackPanel Grid.Row="1">
-            <WrapPanel HorizontalAlignment="Center">
-                <Button Name="winLevSuccessButton" Click="winLevSuccess">Success</Button>
-                <Button Name="winLevFailButton" Click="winLevFail">Fail</Button>
-            </WrapPanel>
-        </StackPanel>
-        <StatusBar Grid.Row="3" Height="23" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White">
+        <StatusBar Grid.Row="3" Height="23" HorizontalAlignment="Stretch" Name="statusBar" VerticalAlignment="Bottom" Background="White" Visibility="Hidden">
             <StatusBarItem Padding="0">
                 <TextBlock Name="statusBarText"></TextBlock>
             </StatusBarItem>

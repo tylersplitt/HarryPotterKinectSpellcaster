@@ -5,28 +5,30 @@
         <tag>WINLEV</tag>
         <one-of>
           <item> wingardium leviosa </item>
-          <item> hey </item>
         </one-of>
       </item>
       <item>
-        <tag>BACKWARD</tag>
+        <tag>ALO</tag>
         <one-of>
-          <item> backward </item>
-          <item> backwards </item>
-          <item> back </item>
-          <item> jake </item>
+          <item> alohomora </item>
         </one-of>
       </item>
       <item>
-        <tag>LEFT</tag>
+        <tag>EXPEL</tag>
         <one-of>
-          <item> turn left </item>
+          <item> expeliarmus </item>
         </one-of>
       </item>
       <item>
-        <tag>RIGHT</tag>
+        <tag>EXPAT</tag>
         <one-of>
-          <item> turn right </item>
+          <item> expecto patronum </item>
+        </one-of>
+      </item>
+      <item>
+        <tag>NONO</tag>
+        <one-of>
+          <item> avada kedavra </item>
         </one-of>
       </item>
     </one-of>

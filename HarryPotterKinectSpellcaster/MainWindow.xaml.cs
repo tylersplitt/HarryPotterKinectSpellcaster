@@ -28,12 +28,19 @@ namespace HarryPotterKinectSpellcaster
     /// </summary>
     public partial class MainWindow : Window
     {
+        private MediaElement[] players;
+
+        private int expelCount = 0;
+        private int expatCount = 0;
+
         private Storyboard introTextStoryBoard;
 
         private Storyboard transitionStartStoryBoard;
         private Storyboard transitionEndStoryBoard;
 
         private MediaElement currentPlayer;
+
+        private bool listening = false;
 
         private bool introTextAnimated = false;
 
@@ -56,7 +63,33 @@ namespace HarryPotterKinectSpellcaster
         {
             InitializeComponent();
 
+            Mouse.OverrideCursor = Cursors.None;
+
+            players = new MediaElement[] {
+                introPlayer,
+                idlePlayer,
+                winLevPlayer,
+                expelPlayer1,
+                expelPlayer2,
+                alohomoraPlayer,
+                expatPlayer1,
+                expatPlayer2,
+                avadaPlayer
+            };
+
+            foreach(var p in players)
+            {
+                p.Visibility = Visibility.Hidden;
+                p.Volume = 0;
+                p.Play();
+                p.Stop();
+                p.Volume = 1;
+            }
+
+            introPlayer.Visibility = Visibility.Visible;
             introPlayer.Play();
+
+            currentPlayer = introPlayer;
 
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -110,16 +143,16 @@ namespace HarryPotterKinectSpellcaster
         private void setTransitionAnimations()
         {
             DoubleAnimation transitionFadeOutAnimation = new DoubleAnimation();
-            transitionFadeOutAnimation.From = 1.0;
+            transitionFadeOutAnimation.From = 0.7;
             transitionFadeOutAnimation.To = 0.0;
             transitionFadeOutAnimation.FillBehavior = FillBehavior.Stop;
-            transitionFadeOutAnimation.Duration = new Duration(TimeSpan.FromSeconds(1.35));
+            transitionFadeOutAnimation.Duration = new Duration(TimeSpan.FromSeconds(1.40));
 
             DoubleAnimation transitionFadeInAnimation = new DoubleAnimation();
             transitionFadeInAnimation.From = 0.0;
-            transitionFadeInAnimation.To = 1.0;
+            transitionFadeInAnimation.To = 0.7;
             transitionFadeInAnimation.FillBehavior = FillBehavior.Stop;
-            transitionFadeInAnimation.Duration = new Duration(TimeSpan.FromSeconds(1.45));
+            transitionFadeInAnimation.Duration = new Duration(TimeSpan.FromSeconds(1.50));
 
             transitionStartStoryBoard = new Storyboard();
             transitionStartStoryBoard.Children.Add(transitionFadeInAnimation);
@@ -152,11 +185,12 @@ namespace HarryPotterKinectSpellcaster
             { 
                 this.statusBarText.Text = "Free to speak";
             }
-            if (introPlayer.NaturalDuration.HasTimeSpan &&
-                introPlayer.IsVisible &&
-                TimeSpan.Compare(introPlayer.Position.Add(TimeSpan.FromSeconds(2)), introPlayer.NaturalDuration.TimeSpan) > 0)
+            if (currentPlayer != null && currentPlayer.NaturalDuration.HasTimeSpan &&
+                currentPlayer.IsVisible &&
+                TimeSpan.Compare(currentPlayer.Position.Add(TimeSpan.FromSeconds(.5)), currentPlayer.NaturalDuration.TimeSpan) > 0)
             {
-                startIdle();
+                currentPlayer = idlePlayer;
+                startTransition();
             }
 
             var introTime = TimeSpan.FromMilliseconds(27500);
@@ -164,6 +198,7 @@ namespace HarryPotterKinectSpellcaster
             {
                 introTextStoryBoard.Begin(introText);
                 introTextAnimated = true;
+                listening = true;
             }
         }
 
@@ -185,11 +220,12 @@ namespace HarryPotterKinectSpellcaster
 
         private void playVideo(MediaElement player)
         {
+            player.Stop();
             player.Visibility = Visibility.Visible;
             player.Play();
-            player.MediaEnded += repeatIdle;
+            //player.MediaEnded += repeatIdle;
 
-            hideIdleIntro();
+            hideAllOtherPlayers(player);
         }
 
         private void startTransition()
@@ -225,13 +261,36 @@ namespace HarryPotterKinectSpellcaster
         {
             transitionEndPlayer.Stop();
             transitionEndPlayer.Visibility = Visibility.Hidden;
-            transitionEndPlayer.Opacity = 1.0;
+            transitionEndPlayer.Opacity = 0;
         }
 
         private void showIdle()
         {
             introText.Visibility = Visibility.Visible;
             idlePlayer.Visibility = Visibility.Visible;
+        }
+
+        private void hideAllOtherPlayers(MediaElement player)
+        {
+            foreach(var p in players)
+            {
+                if(player != p)
+                {
+                    p.Stop();
+                    p.Visibility = Visibility.Hidden;
+                }
+            }
+
+            if(player == introPlayer || player == idlePlayer)
+            {
+                introText.Visibility = Visibility.Visible;
+                listening = true;
+            }
+            else
+            {
+                introText.Visibility = Visibility.Hidden;
+                listening = false;
+            }
         }
 
         private void hideIdleIntro()
@@ -243,23 +302,55 @@ namespace HarryPotterKinectSpellcaster
             idlePlayer.Visibility = Visibility.Hidden;
         }
 
-        private void winLevSuccess(object sender, RoutedEventArgs e)
+        private void winLevPlay()
         {
             startTransition();
             currentPlayer = winLevPlayer;
         }
 
-        private void winLevSuccess()
+        private void alohomoraPlay()
         {
             startTransition();
-            currentPlayer = winLevPlayer;
+            currentPlayer = alohomoraPlayer;
         }
 
-        private void winLevFail(object sender, RoutedEventArgs e)
+        private void expelPlay()
         {
             startTransition();
-            currentPlayer = winLevFailPlayer;
-        } 
+
+            if (expelCount % 2 == 0)
+            {
+                currentPlayer = expelPlayer1;
+            }
+            else
+            {
+                currentPlayer = expelPlayer2;
+            }
+
+            expelCount++;
+        }
+
+        private void expatPlay()
+        {
+            startTransition();
+
+            if (expatCount % 2 == 0)
+            {
+                currentPlayer = expatPlayer1;
+            }
+            else
+            {
+                currentPlayer = expatPlayer2;
+            }
+
+            expatCount++;
+        }
+
+        private void avadaPlay()
+        {
+            startTransition();
+            currentPlayer = avadaPlayer;
+        }
 
         /// <summary>
         /// Gets the metadata for the speech recognizer (acoustic model) most suitable to
@@ -386,28 +477,32 @@ namespace HarryPotterKinectSpellcaster
         private void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             // Speech utterance confidence below which we treat speech as if it hadn't been heard
-            const double ConfidenceThreshold = 0.3;
+            const double ConfidenceThreshold = 0.5;
 
             this.confidence.Text += "; " + e.Result.Confidence.ToString();
 
-            if (e.Result.Confidence >= ConfidenceThreshold)
+            if (e.Result.Confidence >= ConfidenceThreshold && listening)
             {
                 switch (e.Result.Semantics.Value.ToString())
                 {
                     case "WINLEV":
-                        winLevSuccess();
+                        winLevPlay();
                         break;
 
-                    case "BACKWARD":
-                        playVideo(winLevPlayer);
+                    case "ALO":
+                        alohomoraPlay();
                         break;
 
-                    case "LEFT":
-
+                    case "EXPEL":
+                        expelPlay();
                         break;
 
-                    case "RIGHT":
+                    case "EXPAT":
+                        expatPlay();
+                        break;
 
+                    case "NONO":
+                        avadaPlay();
                         break;
                 }
             }
